@@ -10,12 +10,13 @@ maxResults = 50
 
 def get_playlistId():
     
+    # en el bloque try intentamos ejecutar el codigo que puede generar una excepcion
     try:
         url = f"https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle={CHANNEL_HANDLE}&key={os.getenv('youtube_api_key')}"
 
         response = requests.get(url)
         
-        response.raise_for_status()  # Verifica si la solicitud fue exitosa
+        response.raise_for_status()  # Verifica si la solicitud fue exitosa, mediante el codigo de estado HTTP
 
         data = response.json() # Convierte un objeto en un formato string de JSON
 
@@ -24,7 +25,7 @@ def get_playlistId():
         # data.items[0].contentDetails.relatedPlaylists.uploads # Esto es un diccionario de Python, el cual podemos acceder con las llaves
         # ["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]  # Esto es equivalente a la linea de arriba
 
-        # Ahora para obtener los channel items
+        # Ahora para obtener los channel items, aqui obtengo las playlist de videos subidos por el canal
         channel_items = data["items"][0]
         # Ahora para obtener el playlistId de los videos subidos por el canal
         channel_playlistId = channel_items["contentDetails"]["relatedPlaylists"]["uploads"]
@@ -33,6 +34,7 @@ def get_playlistId():
 
         return channel_playlistId
     
+    # En except capturamos la excepcion si ocurre un error en la solicitud HTTP, raise lanza una excepcion si la respuesta HTTP indica un error
     except requests.exceptions.RequestException as e:
         raise e # Re-raise the exception for further handling if needed
 
@@ -43,7 +45,7 @@ def get_playlistId():
 def get_video_ids(playlistId):
     
     video_ids = [] # Lista para almacenar los IDs de los videos
-    pageToken = None
+    pageToken = None # se pone none al inicio porque no hay token de pagina al principio
     base_url = f"https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults={maxResults}&playlistId={playlistId}&key={os.getenv('youtube_api_key')}"
     
     try:
@@ -114,6 +116,7 @@ def save_to_json(extracted_data):
 
     with open(file_path, "w", encoding="utf-8") as json_outfile:
         json.dump(extracted_data, json_outfile, ensure_ascii=False, indent=4)
+# .dump convierte un objeto de Python en una cadena JSON y la escribe en un archivo
 # en esta funcion se guarda la data extraida en un archivo JSON, el nombre del archivo incluye la fecha actual
 # en with se abre el archivo en modo escritura ("w") y con codificacion UTF-8
 # with statement es un context manager que asegura que el archivo se cierre correctamente despues de usarlo, incluso si ocurre un error durante la escritura

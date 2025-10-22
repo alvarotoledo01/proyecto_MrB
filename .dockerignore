@@ -1,0 +1,13 @@
+# Ignora lo pesado, pero NO el requirements.txt
+venv/
+__pycache__/
+*.pyc
+.env
+.git/
+.gitignore
+
+# Si querés ignorar /data, dejalo así:
+# data/
+
+# Asegurá que requirements.txt se incluya
+!requirements.txt
